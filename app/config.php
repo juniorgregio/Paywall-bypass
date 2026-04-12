@@ -12,7 +12,15 @@ require_once __DIR__ . '/vendor/autoload.php';
 try {
     // Load environment variables
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-    $dotenv->load();
+    try {
+        $dotenv->load();
+    } catch (Dotenv\Exception\InvalidFileException $e) {
+        // e.g. corrupted .env from a bad export; use real process env (Railway, Docker, etc.)
+        $fromEnv = getenv();
+        if (is_array($fromEnv)) {
+            $_ENV = array_merge($_ENV, $fromEnv);
+        }
+    }
 
     // Validate required fields
     $dotenv->required([
