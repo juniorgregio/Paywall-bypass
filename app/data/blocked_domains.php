@@ -15,7 +15,6 @@ return [
     // News sites
     //-- Content behind login access/hard paywall
     'wsj.com',
-    'piaui.folha.uol.com.br',
     'economist.com',
     'doi.org',
     'utppublishing.com',

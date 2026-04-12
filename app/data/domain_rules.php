@@ -148,16 +148,6 @@ return [
             position:inherit !important;
         }'
     ],
-    'folha.uol.com.br' => [
-        'idElementRemove' => ['paywall-flutuante', 'paywall', 'paywall-signup'],
-        'classElementRemove' => ['banner-assinatura', 'paywall-container'],
-        'scriptTagRemove' => ['paywall.js', 'content-gate.js'],
-        'cookies' => [
-            'paywall_visit' => null,
-            'folha_id' => null,
-            'paywall_access' => 'true'
-        ]
-    ],
     'ftm.nl' => [
         'fetchStrategies' => 'fetchFromSelenium',
         'removeCustomAttr' => ['dialog', 'iframe'],
@@ -172,10 +162,6 @@ return [
         'fetchStrategies' => 'fetchFromSelenium',
         'classAttrRemove' => ['is-hidden-compare'],
         'classElementRemove' => ['cc-window']
-    ],
-    'uol.com.br' => [
-        'scriptTagRemove' => ['me.jsuol.com.br', 'c.jsuol.com.br'],
-        'classElementRemove' => ['header-top-wrapper'],
     ],
     'stcatharinesstandard.ca' => [
         'fetchStrategies' => 'fetchFromSelenium',
