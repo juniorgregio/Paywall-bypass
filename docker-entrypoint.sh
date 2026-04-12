@@ -39,14 +39,48 @@ ENV_FILE="/app/.env"
 # Clean Env file
 > "$ENV_FILE"
 
-while IFS='=' read -r key value; do
-    # If value contains spaces and is not already quoted, add quotes
-    if [[ "$value" =~ \  ]] && ! [[ "$value" =~ ^\".*\"$ ]]; then
-        value="\"$value\""
-    fi
+# Build a valid dotenv file from the process environment.
+# A naive `IFS='=' read` breaks on values that contain '=' (Railway secrets,
+# DATABASE_URL, BASE64 payloads, etc.) and produces lines php-dotenv cannot parse.
+escape_dotenv_value() {
+    local s=$1
+    local out=
+    local i c
+    local len=${#s}
+    for (( i=0; i<len; i++ )); do
+        c=${s:i:1}
+        case "$c" in
+            \\) out+='\\' ;;
+            \") out+='\"' ;;
+            \$) out+='\$' ;;
+            $'\n') out+='\n' ;;
+            $'\r') out+='\r' ;;
+            $'\t') out+='\t' ;;
+            *) out+="$c" ;;
+        esac
+    done
+    printf '%s' "$out"
+}
 
-    echo "$key=$value" >> "$ENV_FILE"
-done < <(env)
+append_env_line() {
+    local key=$1
+    local value=$2
+    if [[ -z "$value" ]]; then
+        printf '%s=\n' "$key" >> "$ENV_FILE"
+    else
+        local esc
+        esc=$(escape_dotenv_value "$value")
+        printf '%s="%s"\n' "$key" "$esc" >> "$ENV_FILE"
+    fi
+}
+
+while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ -z "$line" || "$line" != *=* ]] && continue
+    key="${line%%=*}"
+    value="${line#*=}"
+    [[ "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || continue
+    append_env_line "$key" "$value"
+done < <(printenv)
 
 log_success "Environment variables configured"
 
