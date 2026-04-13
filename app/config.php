@@ -43,6 +43,8 @@ try {
     define('SITE_NAME', $_ENV['SITE_NAME']);
     define('SITE_DESCRIPTION', $_ENV['SITE_DESCRIPTION']);
     define('SITE_URL', $_ENV['SITE_URL']);
+    $sitePassword = isset($_ENV['SITE_PASSWORD']) ? trim((string) $_ENV['SITE_PASSWORD']) : '';
+    define('SITE_PASSWORD', $sitePassword !== '' ? $sitePassword : 'Teste@123');
     define('CLEANUP_DAYS', $_ENV['CLEANUP_DAYS'] ?? 0);
     
     // Optional settings with defaults

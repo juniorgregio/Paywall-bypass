@@ -287,6 +287,33 @@ class Router
             parse_str(substr($queryString, 1), $_GET);
         }
 
+        require_once __DIR__ . '/../config.php';
+        require_once __DIR__ . '/../inc/SiteAuthGate.php';
+        \Inc\SiteAuthGate::startSession();
+
+        if ($uri === '/login') {
+            if ($httpMethod === 'POST') {
+                \Inc\SiteAuthGate::handleLoginPost();
+            }
+            if (\Inc\SiteAuthGate::isAuthenticated()) {
+                $dest = \Inc\SiteAuthGate::sanitizeNext($_GET['next'] ?? '/');
+                header('Location: ' . $dest);
+                exit;
+            }
+            $err = isset($_GET['error']);
+            \Inc\SiteAuthGate::showLoginForm(\Inc\SiteAuthGate::sanitizeNext($_GET['next'] ?? '/'), $err);
+            exit;
+        }
+
+        if ($uri === '/logout') {
+            \Inc\SiteAuthGate::logout();
+        }
+
+        if (!\Inc\SiteAuthGate::isAuthenticated()) {
+            \Inc\SiteAuthGate::showLoginForm(\Inc\SiteAuthGate::nextFromRequest(), false);
+            exit;
+        }
+
         $routeInfo = $this->dispatcher->dispatch($httpMethod, $uri);
 
         switch ($routeInfo[0]) {

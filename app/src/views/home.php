@@ -52,6 +52,7 @@
                 <a target="_blank" href="https://github.com/manualdousuario/marreta/wiki/API-Rest">API Rest</a>
                 <a target="_blank" href="https://github.com/manualdousuario/marreta/">Github</a>
                 <a target="_blank" href="https://github.com/manualdousuario/marreta/blob/main/README.en.md#-integrations"><?php echo \Inc\Language::get('nav_integration'); ?></a>
+                <a href="/logout">Sair</a>
             </nav>
             <div class="fast_buttons">
                 <div class="theme-controls">
