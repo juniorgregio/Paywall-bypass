@@ -49,9 +49,7 @@
                 <h1><?php echo SITE_NAME; ?></h1>
             </div>
             <nav>
-                <a target="_blank" href="https://github.com/manualdousuario/marreta/wiki/API-Rest">API Rest</a>
-                <a target="_blank" href="https://github.com/manualdousuario/marreta/">Github</a>
-                <a target="_blank" href="https://github.com/manualdousuario/marreta/blob/main/README.en.md#-integrations"><?php echo \Inc\Language::get('nav_integration'); ?></a>
+                <a target="_blank" href="https://github.com/juniorgregio/Paywall-bypass#readme">GitHub</a>
                 <a href="/logout">Sair</a>
             </nav>
             <div class="fast_buttons">

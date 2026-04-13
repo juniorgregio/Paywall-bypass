@@ -1,4 +1,11 @@
 {
+    "name": "juniorgregio/paywall-bypass",
+    "description": "Paywall bypass (Marreta fork)",
+    "homepage": "https://github.com/juniorgregio/Paywall-bypass",
+    "support": {
+        "issues": "https://github.com/juniorgregio/Paywall-bypass/issues",
+        "source": "https://github.com/juniorgregio/Paywall-bypass"
+    },
     "require": {
         "vlucas/phpdotenv": "^5.6.1",
         "aws/aws-sdk-php": "^3.0",
