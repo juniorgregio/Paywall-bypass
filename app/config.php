@@ -22,10 +22,20 @@ try {
         }
     }
 
+    // Defaults when only SITE_URL is set (common on PaaS dashboards)
+    $siteName = trim((string) ($_ENV['SITE_NAME'] ?? ''));
+    if ($siteName === '') {
+        $siteName = 'Marreta';
+    }
+    $siteDescription = trim((string) ($_ENV['SITE_DESCRIPTION'] ?? ''));
+    if ($siteDescription === '') {
+        $siteDescription = 'Chapéu de paywall é marreta!';
+    }
+    $_ENV['SITE_NAME'] = $siteName;
+    $_ENV['SITE_DESCRIPTION'] = $siteDescription;
+
     // Validate required fields
     $dotenv->required([
-        'SITE_NAME',
-        'SITE_DESCRIPTION',
         'SITE_URL'
     ])->notEmpty();
 
