@@ -1,8 +1,8 @@
 services:
-  # Marreta
+  # Marreta / Paywall-bypass
   marreta:
     container_name: marreta
-    image: ghcr.io/manualdousuario/marreta:latest
+    build: .
     ports:
       - "80:80"
     volumes:
