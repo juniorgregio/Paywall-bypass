@@ -191,7 +191,8 @@ return [
         'classElementRemove' => 'zephr'
     ],
     'nytimes.com' => [
-        'idElementRemove' => ['gateway-content', 'site-index', 'complianceOverlay'],
+        // Do not remove #site-index: on many NYT pages it wraps the entire app shell; removing it yields a blank document.
+        'idElementRemove' => ['gateway-content', 'complianceOverlay'],
         'customCode' => '
             setTimeout(function() {
                 const walk = document.createTreeWalker(
@@ -242,6 +243,10 @@ return [
         ',
         'fetchStrategies' => 'fetchFromWaybackMachine',
         'excludeGlobalRules' => [
+            // Marketing/subscription pages often use .subscription as the main layout; global rule would strip the whole page.
+            'classElementRemove' => [
+                'subscription',
+            ],
             'scriptTagRemove' => [
                 'gtm.js',
                 'ga.js',
