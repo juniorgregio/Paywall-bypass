@@ -52,10 +52,6 @@ return [
         'GENERIC_ERROR' => [
             'message' => 'Ocurrió un error al procesar su solicitud.',
             'type' => 'warning'
-        ],
-        'RESTRICTED_URL' => [
-            'message' => 'Esta URL contiene contenido restringido y no se puede procesar por razones de seguridad.',
-            'type' => 'error'
         ]
     ]
 ];

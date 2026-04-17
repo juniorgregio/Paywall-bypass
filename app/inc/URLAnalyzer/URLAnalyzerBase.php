@@ -29,7 +29,6 @@ class URLAnalyzerBase
     const ERROR_DNS_FAILURE = 'DNS_FAILURE';
     const ERROR_CONTENT_ERROR = 'CONTENT_ERROR';
     const ERROR_GENERIC_ERROR = 'GENERIC_ERROR';
-    const ERROR_RESTRICTED_URL = 'RESTRICTED_URL';
 
     /** @var array Maps error types to HTTP codes and message keys */
     protected $errorMap = [
@@ -41,8 +40,7 @@ class URLAnalyzerBase
         self::ERROR_CONNECTION_ERROR => ['code' => 503, 'message_key' => 'CONNECTION_ERROR'],
         self::ERROR_DNS_FAILURE => ['code' => 504, 'message_key' => 'DNS_FAILURE'],
         self::ERROR_CONTENT_ERROR => ['code' => 502, 'message_key' => 'CONTENT_ERROR'],
-        self::ERROR_GENERIC_ERROR => ['code' => 500, 'message_key' => 'GENERIC_ERROR'],
-        self::ERROR_RESTRICTED_URL => ['code' => 403, 'message_key' => 'RESTRICTED_URL']
+        self::ERROR_GENERIC_ERROR => ['code' => 500, 'message_key' => 'GENERIC_ERROR']
     ];
 
     /** @var array List of user agents to rotate through, including Googlebot */
@@ -128,48 +126,4 @@ class URLAnalyzerBase
         return $this->rules->hasDomainRules($domain);
     }
 
-    /**
-     * Check if URL contains restricted keywords
-     * @param string $url The URL to check
-     * @return bool True if URL contains restricted keywords, false otherwise
-     */
-    protected function isRestrictedUrl($url)
-    {
-        $restrictedKeywords = [
-            'login',
-            'signin',
-            'sign-in',
-            'signup',
-            'sign-up',
-            'register',
-            'registration',
-            'lost-password',
-            'forgot-password',
-            'reset-password',
-            'password',
-            'auth',
-            'authentication',
-            'account',
-            'profile',
-            'dashboard',
-            'admin',
-            'member',
-            'subscription',
-            'subscribe',
-            'premium',
-            'checkout',
-            'payment',
-            'billing'
-        ];
-
-        $urlLower = strtolower($url);
-        
-        foreach ($restrictedKeywords as $keyword) {
-            if (strpos($urlLower, $keyword) !== false) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
 }

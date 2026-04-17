@@ -82,15 +82,8 @@ try {
     define('DOMAIN_RULES', require __DIR__ . '/data/domain_rules.php');
     define('GLOBAL_RULES', require __DIR__ . '/data/global_rules.php');
     
-    // Load DMCA domains from JSON file
-    $dmcaDomainsFile = __DIR__ . '/cache/dmca_domains.json';
-    if (file_exists($dmcaDomainsFile)) {
-        $dmcaDomainsJson = file_get_contents($dmcaDomainsFile);
-        $dmcaDomains = json_decode($dmcaDomainsJson, true);
-        define('DMCA_DOMAINS', is_array($dmcaDomains) ? $dmcaDomains : []);
-    } else {
-        define('DMCA_DOMAINS', []);
-    }
+    // DMCA blocklist disabled (empty list)
+    define('DMCA_DOMAINS', []);
 
 } catch (Dotenv\Exception\ValidationException $e) {
     die('Environment Error: ' . $e->getMessage());
