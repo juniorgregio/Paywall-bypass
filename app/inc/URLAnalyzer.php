@@ -105,6 +105,11 @@ class URLAnalyzer extends URLAnalyzerBase
             $domainRules = $this->getDomainRules($host);
             $fetchStrategy = isset($domainRules['fetchStrategies']) ? $domainRules['fetchStrategies'] : null;
 
+            $hostBase = preg_replace('#^www\.#i', '', strtolower((string) $host));
+            if ($hostBase === 'nytimes.com' && $this->nytimesSubscriptionLikePath($url)) {
+                $fetchStrategy = 'fetchFromSelenium';
+            }
+
             // Try domain-specific fetch strategy if available
             if ($fetchStrategy) {
                 try {
@@ -122,7 +127,28 @@ class URLAnalyzer extends URLAnalyzerBase
                     }
 
                     if (!empty($content)) {
-                        $this->activatedRules[] = "fetchStrategy: $fetchStrategy";
+                        $effectiveFetchStrategy = $fetchStrategy;
+                        if (
+                            $fetchStrategy === 'fetchFromWaybackMachine'
+                            && $hostBase === 'nytimes.com'
+                            && $this->nytimesWaybackBodyLooksEmpty($content)
+                        ) {
+                            try {
+                                $browser = isset($domainRules['browser']) ? $domainRules['browser'] : 'firefox';
+                                $live = $this->fetch->fetchFromSelenium($url, $browser);
+                                if (
+                                    !empty($live)
+                                    && $this->nytimesVisibleTextLength($live) > $this->nytimesVisibleTextLength($content)
+                                ) {
+                                    $content = $live;
+                                    $effectiveFetchStrategy = 'fetchFromSelenium';
+                                }
+                            } catch (\Exception $e) {
+                                Logger::getInstance()->logUrl($url, 'NYT_SELENIUM_UPGRADE_ERROR', $e->getMessage());
+                            }
+                        }
+
+                        $this->activatedRules[] = "fetchStrategy: $effectiveFetchStrategy";
                         // Cache the raw HTML content
                         $this->cache->set($url, $content);
                         // Process content in real-time
@@ -209,5 +235,46 @@ class URLAnalyzer extends URLAnalyzerBase
                 $this->error->throwError(self::ERROR_GENERIC_ERROR, (string)$message);
             }
         }
+    }
+
+    /**
+     * NYT subscription / checkout style URLs need a live browser; Wayback often returns an empty shell.
+     */
+    private function nytimesSubscriptionLikePath(string $url): bool
+    {
+        $path = (string) parse_url($url, PHP_URL_PATH);
+        $pathLower = strtolower($path);
+
+        return str_contains($pathLower, 'subscription')
+            || str_contains($pathLower, 'subscribe')
+            || str_contains($pathLower, 'checkout')
+            || str_contains($pathLower, 'payment')
+            || str_contains($pathLower, 'billing')
+            || str_contains($pathLower, 'account')
+            || str_contains($pathLower, 'login')
+            || str_contains($pathLower, 'register');
+    }
+
+    private function nytimesVisibleTextLength(string $html): int
+    {
+        $plain = strip_tags($html);
+        $plain = html_entity_decode($plain, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $plain = preg_replace('/\s+/u', ' ', $plain);
+
+        return strlen(trim((string) $plain));
+    }
+
+    /**
+     * Heuristic: Wayback snapshot has lots of markup but almost no body text (SPA shell + footer only).
+     */
+    private function nytimesWaybackBodyLooksEmpty(string $html): bool
+    {
+        if (stripos($html, 'web.archive.org') === false) {
+            return false;
+        }
+
+        $len = $this->nytimesVisibleTextLength($html);
+
+        return strlen($html) > 15000 && $len < 1200;
     }
 }

@@ -243,9 +243,17 @@ return [
         ',
         'fetchStrategies' => 'fetchFromWaybackMachine',
         'excludeGlobalRules' => [
-            // Marketing/subscription pages often use .subscription as the main layout; global rule would strip the whole page.
+            // Marketing/subscription pages reuse paywall-related class names as layout wrappers; stripping them yields a blank main column.
             'classElementRemove' => [
                 'subscription',
+                'subscriber-content',
+                'premium-content',
+                'signin-wall',
+                'register-wall',
+                'paid-content',
+                'premium-article',
+                'subscription-box',
+                'subscribe-form',
             ],
             'scriptTagRemove' => [
                 'gtm.js',
