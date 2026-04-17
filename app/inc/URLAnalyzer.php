@@ -56,12 +56,6 @@ class URLAnalyzer extends URLAnalyzerBase
             $this->error->throwError(self::ERROR_INVALID_URL, '');
         }
 
-        // Check if URL contains restricted keywords
-        if ($this->isRestrictedUrl($url)) {
-            Logger::getInstance()->logUrl($url, 'RESTRICTED_URL');
-            $this->error->throwError(self::ERROR_RESTRICTED_URL, '');
-        }
-
         // Check if domain is in DMCA list FIRST (before any HTTP requests)
         foreach (DMCA_DOMAINS as $dmcaEntry) {
             if (is_array($dmcaEntry) && isset($dmcaEntry['host'])) {

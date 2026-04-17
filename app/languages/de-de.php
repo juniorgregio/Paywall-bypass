@@ -52,10 +52,6 @@ return [
         'GENERIC_ERROR' => [
             'message' => 'Bei der Bearbeitung Ihrer Anfrage ist ein Fehler aufgetreten.',
             'type' => 'warning'
-        ],
-        'RESTRICTED_URL' => [
-            'message' => 'Diese URL enthält eingeschränkten Inhalt und kann aus Sicherheitsgründen nicht verarbeitet werden.',
-            'type' => 'error'
         ]
     ]
 ];
