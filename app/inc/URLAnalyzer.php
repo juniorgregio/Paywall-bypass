@@ -128,9 +128,19 @@ class URLAnalyzer extends URLAnalyzerBase
                         // Process content in real-time
                         return $this->process->processContent($content, $host, $url);
                     }
+                } catch (URLAnalyzerException $e) {
+                    Logger::getInstance()->logUrl($url, strtoupper($fetchStrategy) . '_ERROR', $e->getMessage());
+                    $fallbackErrors = [
+                        self::ERROR_NOT_FOUND,
+                        self::ERROR_HTTP_ERROR,
+                        self::ERROR_CONTENT_ERROR,
+                    ];
+                    if (!in_array($e->getErrorType(), $fallbackErrors, true)) {
+                        throw $e;
+                    }
+                    // Wayback and other primary strategies often miss marketing/checkout URLs; try generic chain below.
                 } catch (\Exception $e) {
                     Logger::getInstance()->logUrl($url, strtoupper($fetchStrategy) . '_ERROR', $e->getMessage());
-                    throw $e;
                 }
             }
 
@@ -140,6 +150,15 @@ class URLAnalyzer extends URLAnalyzerBase
                 ['method' => 'fetchFromWaybackMachine', 'args' => [$url]],
                 ['method' => 'fetchFromSelenium', 'args' => [$url, 'firefox']]
             ];
+
+            if ($fetchStrategy) {
+                $fetchStrategies = array_values(array_filter(
+                    $fetchStrategies,
+                    static function (array $strategy) use ($fetchStrategy) {
+                        return $strategy['method'] !== $fetchStrategy;
+                    }
+                ));
+            }
 
             // Track last error for better error reporting
             $lastError = null;
